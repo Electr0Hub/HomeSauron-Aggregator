@@ -3,6 +3,8 @@
 
 This project is an aggregator, control panel, and restreamer for ESP32 or other mjpeg streaming cameras. It allows you to manage and stream videos from multiple cameras, providing features for local and cloud storage, camera control, and more.
 
+To use it easily use modified ESP32 CameraWebServer project - an eye of [HomeSauron](https://github.com/Electr0Hub/HomeSauron-Eye)
+
 ## Philosophy
 Here is why this project created, which problem it solves and where and how can be used.
 
