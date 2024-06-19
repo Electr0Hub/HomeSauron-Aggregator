@@ -61,4 +61,7 @@ EXPOSE 3000
 EXPOSE 80
 COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+RUN composer install --optimize-autoloader --no-interaction
+RUN npm install
+
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

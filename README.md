@@ -1,66 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# HomeSauron Aggregator
+### The missing control panel and aggregator for ESP32 cameras
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is an aggregator, control panel, and restreamer for ESP32 or other mjpeg streaming cameras. It allows you to manage and stream videos from multiple cameras, providing features for local and cloud storage, camera control, and more.
 
-## About Laravel
+## Philosophy
+Here is why this project created, which problem it solves and where and how can be used.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+##### The Problem
+I decided to make DIY surveillance system with ESP32 cameras by just installing them at my house, but I got a serious problem.
+We all (or some of us) know that when you stream mjpeg from your ESP32, only one HTTP connection can read that stream. For example if your camera stream ran at http://192.168.1.55:81/stream and you open that page, the other user cannot do that, because mjpeg stream is endless and the response is not sent to you, the other user will wait endless time to get a response from a camera. If you have installed ESP32 at your house, only one person can watch the camera and this is a real problem.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+##### The Idea
+Decided to create a system, which will read the stream once, i.e. open the streaming connection and forward incoming frame data to all connected users. Since there can be only one active connection reading frames from ESP32 mjpeg stream, decided to make it that way, so there is one linux process for one camera. Laravel fits best for running such processes in background, control them, provide ability for fast coding a simple dashboard, creating CRUD (Create, Read, Update, Delete) for cameras. In addition, decided to create uploading functionality, so we can store the videos into localstorage and Google Drive.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+##### The Result
+In the end I got the whole aggregator for cameras, which provides cameras CRUD, restreamer, uploader and scanner. My DIY surveillance system is ready, build your own now 😎
 
-## Learning Laravel
+TODO: PUT DASHBOARD SCREENSHOT
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Add, Edit, and Delete Cameras**: Manage your cameras easily through the control panel.
+- **Camera Channels**: Each camera has its own channel, allowing you to request frames from specific cameras.
+- **Local Storage**: Store videos locally on your server.
+- **Google Drive Storage**: Store videos in Google Drive.
+- **Auto-Remove Old Videos**: Automatically remove old videos from local storage based on camera settings.
+- **Camera Discovery**: Scan for cameras in your network.
+- **Continuous Video Processing**: Each camera runs a process that continuously captures frames and creates videos.
+- **Process Monitoring**: Automatically restart processes for cameras that lose and regain connection.
+- **Handle Unhandled Frames**: Process frames from disconnected cameras and save the resulting video as "unhandled".
+- **Intercom Functionality**: Use a device like a pad or laptop as an intercom by navigating to the door camera page.
+- **Configurable Video Length**: Set video length via a configuration file.
+- **Camera Settings**: Configure camera settings such as upload to Google Drive, store in local storage, and days to keep videos.
+- **ESP32 Camera Control**: Adjust camera settings like brightness, contrast, and quality and all stuff EPS32 provides.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Redis**: Used for caching, queue management, and broadcasting JPEG frames to Socket.IO.
+- **Node.js Socket.IO**: Emits JPEG frames to socket clients (browsers, mobile phones, intercom pads).
+- **Docker**: Dockerizes the entire project for easy deployment.
+- **FFmpeg**: Converts collected frames into video.
+- **PostgreSQL**: Database management.
+- **Linux**: Operating system. Recommended to run this on a machine which going to be run forever. Raspberry PI is the best choose for this. I didn't test on windows and not even going to do that.
+- **Supervisor**: Manages various processes including Laravel app, queue, scheduler, restreamer processes, and PM2 with Socket.IO.
+- **Nginx**: Forwards traffic to the Laravel application.
 
-## Laravel Sponsors
+## Setup Instructions
+All you need to have on your machine is Docker, assuming you already have it.
+1. **Clone the Repository**:
+    ```shell
+    git clone git@github.com:Electr0Hub/HomeSauron-Aggregator.git
+    cd HomeSauron-Aggregator
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Build and start the application**
+    ```shell
+    sudo make start
+    ```
+3. **Set env vars**
+   
+    Copy the example environment file and configure it with your own values.
+    ```sh
+    cp .env.example .env
+    ```
+   
+    The following env must be set:
+   ```shell
+   SOCKET_PORT=
+   SOCKET_URL= #Do not set the local IP, since the browser must to be able to connect
+   GOOGLE_DRIVE_PARENT_FOLDER_ID= # If you plan to upload to gdrive, get the ID of the folder where you want to have all folders and videos. You can hind it in the URL of the folder (the latest segment)
+   LOCAL_STORAGE_PATH= # If you plan to upload to your local storage, set the absolute path. Remember, this path is mounted as separated volume in docker-compose, so each time you change it you need to rebuild your app
+   ```
+4. **Install app**
 
-### Premium Partners
+    Connect to app container by:
+    
+    ```shell
+    sudo make connect_app
+    ```
+   
+    Then run the following commands one-by-one
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    ```shell
+   php artisan key:generate
+   php artisan migrate
+   ```
 
-## Contributing
+    Everything is ready. Your app, queue, scheduler, restreamer and socket.io are working. Just add some cameras from dashboard.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Folders Hierarchy
+- cameras root folder (LOCAL_STORAGE_PATH)
+    - CAMERA_NAME
+        - _frames_OPERATION_ID (temp folder, currently collecting frames)
+        - _processing_frames_OPERATION_ID (temp folder, already collected frames which are now going to be converted to viedo)
+        - videos
+          - YEAR
+              - MONTH
+                  - DAY
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
+                  - DAY
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
+                      - VIDEO_FILE_NAME(hour, minutes, seconds)
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Todos
 
-## Security Vulnerabilities
+- **Tests**: Implement unit and integration tests.
+- **Google Drive Auto-Delete**: Write functionality to auto-delete old videos from Google Drive. Currently only localstorage has autodeletion feature.
+- **Auto-Updater**: Implement an auto-update feature that checks for new tags on GitHub, pulls updates, runs migrations, and restarts necessary processes.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Interacting with ESP32 Cameras
+
+Here you can understand how this application interacts with ESP32 cameras from the same network and how the things done.
+
+For first, you add a camera from a dashboard. Before creating the camera resource, the backend checks if the host is available AND streams frames. 
+Then the controller creates the camera, fires an event to start the camera restreaming and informs socket.io about new added camera by **camera_added** event, so the socket.io can emit to its clients the new camera content.
+
+### Camera restreaming
+This is how restreamer works:
+1. The restreamer gets all cameras and creates a process for each one
+2. The restreaming process (each camera has its own) creates a connection with ESP32 - a GET request
+3. Reads incoming streaming response (which is endless) chunk by chunk (1024
+4. Founds a JPEG data between boundary (by default its 123456789000000000000987654321 and you have not change it in ESP32 there is nothing to do, otherwise update .env file)
+5. Publishes the frame to redis pubsub (each camera has its own topic there and socketio subscribed to all topics)
+6. If upload to google drive or local storage is enabled, starts to collect frames X seconds (see config/streaming.php) and puts JPEG files into _frames_OPERATION_ID folder
+7. If collected X seconds - runs a job to create a mp4 video from that frames and puts the resulting file into **videos** folder. The collected frames folder becomes from _frames_OPERATION_ID into _processing_frames_OPERATION_ID
+8. If google drive upload enabled - uploads the file there and if local storage is DISABLED - removes the video file
+9. Repeat
+
+TODO: PUT SCHEMA SCREENSHOT
+
+### Handle unhandled frames
+Each frame is JPEG image which going to be a part of video once the restreamer collected X(see config/streaming.php) seconds of frames. 
+But there may be cases when the images created, but restream loop took less than X seconds. 
+For example if X = 60seconds, the loop started and collected 30 seconds of frames and the camera lost a connection with wifi (bad man broke it or just connection issue),
+the collected frames will not be handled, because the loop didnt take 60 seconds. In that case the app/Jobs/HandleUnhandledFrames.php job will do its job.
+
+Here is how it works:
+1. Runs every five minutes (see routes/console.php)
+2. Gets all cameras
+3. Goes to camera root folder
+4. Check the folders (except videos) last modified date. See the [folders hierarchy here](##Folders Hierarchy)
+5. If there is a folder which was not modified (adding/deleting files is modification too) for 20 mins, dispatches the job which creates the videos app/Jobs/CreateVideoAndUploadToGoogleDrive.php
+
+TODO: PUT SCHEMA SCREENSHOT
+
+### Recreate camera restreaming
+As mentioned many times, the camera may lose the connection with aggregator. To keep the restreamer process continuously up, this job doing the following:
+1. Gets all cameras IDs
+2. Using ps aux command check if all cameras have running processes
+3. If some camera doesn't - runs restreamer process in background for that camera
+
+TODO: PUT SCHEMA SCREENSHOT
+
+## The schema of project
+This is the resulting schema how the things work
+TODO: PUT SCHEMA SCREENSHOT
+
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This software is under the CC BY-NC-ND 4.0 licence. For more info see: 
+https://github.com/Electr0Hub/HomeSauron-Aggregator/blob/master/LICENCE
