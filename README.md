@@ -187,6 +187,7 @@ It's a semantic versioning like X.Y.Z where X is vendor, Y major and Z minor cha
 1. You need to remember, that a video creation process is no that light-weight and there is a need in some CPU power
 2. Each camera restreaming process is an **endless** process. Each process should be done in parallel (because we want realtime frames capturing). Remember, that adding a lot of cameras may failure the system - this one and your OS. It's recomended NOT to have more cameras then your CPU core. But you can do experiments and inform about that here by creating an issue.
 3. You can set high quality of frames in camera page. Remember, that high quality videos may require more disk space. 1 min VGA (640x840) video takes about 10MB of disk space. And if you want to keep videos for camera for 7 days, it'll cost you about 98GB of data. Multiple it by 4 (avg num of cameras in the house) you'll be required to provide at least 400GB of space. And this is for a poor VGA format 🙂
+4. DO not judge me for modified ugly interface, I'm backend developer only and the half of my time I spent to understand how to put the button where I want 🙂
 
 ## Kudos to
 - [Creative Team](https://www.creative-tim.com) for making this beatiful UI and providing it for absolutely free
