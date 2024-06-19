@@ -16,7 +16,8 @@ Decided to create a system, which will read the stream once, i.e. open the strea
 ##### The Result
 In the end I got the whole aggregator for cameras, which provides cameras CRUD, restreamer, uploader and scanner. My DIY surveillance system is ready, build your own now 😎
 
-TODO: PUT DASHBOARD SCREENSHOT
+![image](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/2573b652-9398-42b4-b2b6-5c43767342b7)
+
 ## Features
 
 - **Add, Edit, and Delete Cameras**: Manage your cameras easily through the control panel.
@@ -87,7 +88,17 @@ All you need to have on your machine is Docker, assuming you already have it.
 
     Everything is ready. Your app, queue, scheduler, restreamer and socket.io are working. Just add some cameras from dashboard.
 
+## Enabling google drive api
+To be able to upload videos into google drive you need to:
+1. Create a service account
+2. Create JSON key file
+3. Copy and paste it in app root service-account.json file
+4. Share your google drive cameras folder with your service account. Get the email from JSON file (client email)
+
+For more info google or chatgpt(just copy paste these and ask what to do)
+
 ## Folders Hierarchy
+This is the hierarchy of local storage folders. Google drive hierarchy has the same view, except temp folder and video folder (YEAR folders are in CAMERA_NAME folders)
 - cameras root folder (LOCAL_STORAGE_PATH)
     - CAMERA_NAME
         - _frames_OPERATION_ID (temp folder, currently collecting frames)
@@ -105,11 +116,6 @@ All you need to have on your machine is Docker, assuming you already have it.
                       - VIDEO_FILE_NAME(hour, minutes, seconds)
 
 
-## Todos
-
-- **Tests**: Implement unit and integration tests.
-- **Google Drive Auto-Delete**: Write functionality to auto-delete old videos from Google Drive. Currently only localstorage has autodeletion feature.
-- **Auto-Updater**: Implement an auto-update feature that checks for new tags on GitHub, pulls updates, runs migrations, and restarts necessary processes.
 
 ## Interacting with ESP32 Cameras
 
@@ -130,7 +136,9 @@ This is how restreamer works:
 8. If google drive upload enabled - uploads the file there and if local storage is DISABLED - removes the video file
 9. Repeat
 
-TODO: PUT SCHEMA SCREENSHOT
+    
+![Untitled Diagram drawio](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/ec166ca8-c3c2-44fb-bed4-3843359c4700)
+
 
 ### Handle unhandled frames
 Each frame is JPEG image which going to be a part of video once the restreamer collected X(see config/streaming.php) seconds of frames. 
@@ -145,7 +153,7 @@ Here is how it works:
 4. Check the folders (except videos) last modified date. See the [folders hierarchy here](##Folders Hierarchy)
 5. If there is a folder which was not modified (adding/deleting files is modification too) for 20 mins, dispatches the job which creates the videos app/Jobs/CreateVideoAndUploadToGoogleDrive.php
 
-TODO: PUT SCHEMA SCREENSHOT
+![image](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/dae35aa1-d154-4e72-9b2c-9152328f435b)
 
 ### Recreate camera restreaming
 As mentioned many times, the camera may lose the connection with aggregator. To keep the restreamer process continuously up, this job doing the following:
@@ -153,12 +161,25 @@ As mentioned many times, the camera may lose the connection with aggregator. To 
 2. Using ps aux command check if all cameras have running processes
 3. If some camera doesn't - runs restreamer process in background for that camera
 
-TODO: PUT SCHEMA SCREENSHOT
+![image](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/23c0c7ce-17f2-475f-9806-98c1e725affe)
 
 ## The schema of project
 This is the resulting schema how the things work
-TODO: PUT SCHEMA SCREENSHOT
 
+![Untitled Diagram drawio (1)](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/52f14179-8a78-4789-a5dd-2ae1d788161e)
+
+
+
+## Todos
+
+- **Tests**: Implement unit and integration tests.
+- **Google Drive Auto-Delete**: Write functionality to auto-delete old videos from Google Drive. Currently only localstorage has autodeletion feature.
+- **Auto-Updater**: Implement an auto-update feature that checks for new tags on GitHub, pulls updates, runs migrations, and restarts necessary processes.
+
+## Notes
+1. You need to remember, that a video creation process is no that light-weight and there is a need in some CPU power
+2. Each camera restreaming process is an **endless** process. Each process should be done in parallel (because we want realtime frames capturing). Remember, that adding a lot of cameras may failure the system - this one and your OS. It's recomended NOT to have more cameras then your CPU core. But you can do experiments and inform about that here by creating an issue.
+3. You can set high quality of frames in camera page. Remember, that high quality videos may require more disk space. 1 min VGA (640x840) video takes about 10MB of disk space. And if you want to keep videos for camera for 7 days, it'll cost you about 98GB of data. Multiple it by 4 (avg num of cameras in the house) you'll be required to provide at least 400GB of space. And this is for a poor VGA format 🙂
 
 ## License
 
