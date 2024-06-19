@@ -174,7 +174,8 @@ This is the resulting schema how the things work
 
 ![Untitled Diagram drawio (1)](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/52f14179-8a78-4789-a5dd-2ae1d788161e)
 
-
+## Versioning
+It's a semantic versioning like X.Y.Z where X is vendor, Y major and Z minor changes. The vendor change is relatied with an [EYE](https://github.com/Electr0Hub/HomeSauron-Eye), while major and minor changes are for feature and bugfix changes
 
 ## Todos
 
@@ -186,6 +187,11 @@ This is the resulting schema how the things work
 1. You need to remember, that a video creation process is no that light-weight and there is a need in some CPU power
 2. Each camera restreaming process is an **endless** process. Each process should be done in parallel (because we want realtime frames capturing). Remember, that adding a lot of cameras may failure the system - this one and your OS. It's recomended NOT to have more cameras then your CPU core. But you can do experiments and inform about that here by creating an issue.
 3. You can set high quality of frames in camera page. Remember, that high quality videos may require more disk space. 1 min VGA (640x840) video takes about 10MB of disk space. And if you want to keep videos for camera for 7 days, it'll cost you about 98GB of data. Multiple it by 4 (avg num of cameras in the house) you'll be required to provide at least 400GB of space. And this is for a poor VGA format 🙂
+
+## Kudos to
+- [Creative Team](https://www.creative-tim.com) for making this beatiful UI and providing it for absolutely free
+- [espressif](https://github.com/espressif) for making such powerful soft for ESP32 chips
+
 
 ## License
 
