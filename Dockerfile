@@ -38,6 +38,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN apt-get install -y procps
 
+RUN composer install --optimize-autoloader --no-interaction
+RUN npm install
+
 # Copy the application files to the container
 COPY . .
 COPY ./docker/php.ini /usr/local/etc/php/conf.d/php-dev.ini
@@ -60,8 +63,5 @@ RUN chown -R www-data:www-data storage/app
 EXPOSE 3000
 EXPOSE 80
 COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-RUN composer install --optimize-autoloader --no-interaction
-RUN npm install
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
