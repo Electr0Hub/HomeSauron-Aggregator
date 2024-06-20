@@ -69,6 +69,7 @@ All you need to have on your machine is Docker, assuming you already have it.
    
     The following env must be set:
    ```shell
+   APP_URL= # Set your base URL of laravel app, required in socket io for CORS settings
    SOCKET_PORT=
    SOCKET_URL= #Do not set the local IP, since the browser must to be able to connect
    GOOGLE_DRIVE_PARENT_FOLDER_ID= # If you plan to upload to gdrive, get the ID of the folder where you want to have all folders and videos. You can hind it in the URL of the folder (the latest segment)
