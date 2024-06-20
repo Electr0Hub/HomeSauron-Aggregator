@@ -156,7 +156,7 @@ Here is how it works:
 1. Runs every five minutes (see routes/console.php)
 2. Gets all cameras
 3. Goes to camera root folder
-4. Check the folders (except videos) last modified date. See the [folders hierarchy here](##Folders Hierarchy)
+4. Check the folders (except videos) last modified date. See the [folders hierarchy here](https://github.com/Electr0Hub/HomeSauron-Aggregator?tab=readme-ov-file#folders-hierarchy)
 5. If there is a folder which was not modified (adding/deleting files is modification too) for 20 mins, dispatches the job which creates the videos app/Jobs/CreateVideoAndUploadToGoogleDrive.php
 
 ![image](https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/dae35aa1-d154-4e72-9b2c-9152328f435b)
