@@ -60,11 +60,7 @@ All you need to have on your machine is Docker, assuming you already have it.
     cd HomeSauron-Aggregator
     ```
 
-2. **Build and start the application**
-    ```shell
-    sudo make start
-    ```
-3. **Set env vars**
+2. **Set env vars**
    
     Copy the example environment file and configure it with your own values.
     ```sh
@@ -78,6 +74,12 @@ All you need to have on your machine is Docker, assuming you already have it.
    GOOGLE_DRIVE_PARENT_FOLDER_ID= # If you plan to upload to gdrive, get the ID of the folder where you want to have all folders and videos. You can hind it in the URL of the folder (the latest segment)
    LOCAL_STORAGE_PATH= # If you plan to upload to your local storage, set the absolute path. Remember, this path is mounted as separated volume in docker-compose, so each time you change it you need to rebuild your app
    ```
+
+3. **Build and start the application**
+    ```shell
+    sudo make start
+    ```
+
 4. **Install app**
 
     Connect to app container by:
