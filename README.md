@@ -42,6 +42,7 @@ In the end I got the whole aggregator for cameras, which provides cameras CRUD, 
 
 ## Tech Stack
 
+- **Laravel**: Used for developing dashboard, HTTP handlers, restreamer, scheduled and queueable jobs, brodacaster
 - **Redis**: Used for caching, queue management, and broadcasting JPEG frames to Socket.IO.
 - **Node.js Socket.IO**: Emits JPEG frames to socket clients (browsers, mobile phones, intercom pads).
 - **Docker**: Dockerizes the entire project for easy deployment.
