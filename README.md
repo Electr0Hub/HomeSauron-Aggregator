@@ -91,6 +91,8 @@ All you need to have on your machine is Docker, assuming you already have it.
     Then run the following commands one-by-one
 
     ```shell
+   chown -R www-data:www-data storage/logs/
+   chown -R www-data:www-data storage/framework/
    php artisan key:generate
    php artisan migrate
    ```
