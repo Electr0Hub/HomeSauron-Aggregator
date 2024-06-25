@@ -1,13 +1,7 @@
 # HomeSauron Aggregator
-### The missing control panel and aggregator for ESP32 cameras 😎
+### The missing control panel and aggregator for ESP32 cameras
 
 This project is an aggregator, control panel, and restreamer for ESP32 or other mjpeg streaming cameras. It allows you to manage and stream videos from multiple cameras, providing features for local and cloud storage, camera control, and more.
-
-To use it easily use modified ESP32 CameraWebServer project - an [EYE](https://github.com/Electr0Hub/HomeSauron-Eye) of HomeSauron
-
-<p align="center">
-  <img src="https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/fd44a637-4f80-45d3-b1eb-cbff3139db9f" width="300" style="max-width:100%;" alt="logo">
-</p>
 
 ## Philosophy
 Here is why this project created, which problem it solves and where and how can be used.
@@ -63,6 +57,7 @@ All you need to have on your machine is Docker, assuming you already have it.
 2. **Set env vars**
 
    Copy the example environment file and configure it with your own values.
+
     ```sh
     cp .env.example .env
     ```
@@ -101,7 +96,7 @@ All you need to have on your machine is Docker, assuming you already have it.
    Everything is ready. Your app, queue, scheduler, restreamer and socket.io are working. Just add some cameras from dashboard.
 
 ## Enabling google drive api
-To be able to upload videos into google drive you need to:
+To be able to upload videos into Google Drive you need to:
 1. Create oauth
 2. Set it as a desktop app
 3. Download json file and put the content in /google-oauth.json file
@@ -129,6 +124,11 @@ This is the hierarchy of local storage folders. Google drive hierarchy has the s
                         - VIDEO_FILE_NAME(hour, minutes, seconds)
 
 
+## Todos
+
+- **Tests**: Implement unit and integration tests.
+- **Google Drive Auto-Delete**: Write functionality to auto-delete old videos from Google Drive. Currently only localstorage has autodeletion feature.
+- **Auto-Updater**: Implement an auto-update feature that checks for new tags on GitHub, pulls updates, runs migrations, and restarts necessary processes.
 
 ## Interacting with ESP32 Cameras
 
