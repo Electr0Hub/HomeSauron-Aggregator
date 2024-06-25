@@ -39,9 +39,10 @@
     <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
 
     <script>
-        const tableRow = `<tr class="camera-discovery-result-row">
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">__HOST__</p>
+        const tableRow = `<td>
+                                <p class="text-xs font-weight-bold mb-0">
+                                    <a href='http://__HOST__/stream' target='_blank'>__HOST__</a>
+                                </p>
                                 </td>
                                 <td class="align-middle text-center text-sm">
                                     <span class="badge badge-sm bg-gradient-success">Online</span>
@@ -51,7 +52,7 @@
                                         Add This Camera
                                     </a>
                                 </td>
-                            </tr>`;
+                            `;
 
         const socket = io('{{ config('streaming.socket_url') }}');
 
@@ -67,6 +68,7 @@
             const htmlToPaste = tableRow.replaceAll('__HOST__', data);
             const newRow = document.createElement('tr');
             newRow.innerHTML = htmlToPaste;
+            newRow.classList.add('camera-discovery-result-row');
 
             const tableBody = document.getElementById('camera-discovery-table-body');
             tableBody.appendChild(newRow);
