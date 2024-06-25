@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GoogleOAuthHandlerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -14,3 +15,5 @@ Route::group(['prefix' => 'cameras', 'as' => 'cameras.'], function () {
     Route::get('/{camera}', [CameraController::class, 'show'])->name('show');
     Route::delete('/{camera}', [CameraController::class, 'delete'])->name('delete');
 });
+
+Route::get('/google/callback', [GoogleOAuthHandlerController::class, 'handleCallback'])->name('google.callback');

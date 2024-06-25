@@ -18,6 +18,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-service-account.json
+google-oauth.json
 supervisord.log
 supervisord.pid
