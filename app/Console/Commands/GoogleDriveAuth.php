@@ -44,7 +44,6 @@ class GoogleDriveAuth extends Command
         $client->addScope(Google_Service_Drive::DRIVE);
         $client->setAccessType('offline');
 
-
         // Generate the authorization URL
         $authUrl = $client->createAuthUrl();
         $this->info('Open the following link in your browser:');

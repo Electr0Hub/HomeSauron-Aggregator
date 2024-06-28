@@ -38,11 +38,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN apt-get install -y procps
 
+COPY . .
+
 RUN composer install --optimize-autoloader --no-interaction
 RUN npm install
 
 # Copy the application files to the container
-COPY . .
+
 COPY ./docker/php.ini /usr/local/etc/php/conf.d/php-dev.ini
 
 # Set permissions for Laravel
