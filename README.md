@@ -1,7 +1,13 @@
 # HomeSauron Aggregator
-### The missing control panel and aggregator for ESP32 cameras
+### The missing control panel and aggregator for ESP32 cameras 😎
 
 This project is an aggregator, control panel, and restreamer for ESP32 or other mjpeg streaming cameras. It allows you to manage and stream videos from multiple cameras, providing features for local and cloud storage, camera control, and more.
+
+To use it easily use modified ESP32 CameraWebServer project - an [EYE](https://github.com/Electr0Hub/HomeSauron-Eye) of HomeSauron
+
+<p align="center">
+  <img src="https://github.com/Electr0Hub/HomeSauron-Aggregator/assets/22774727/fd44a637-4f80-45d3-b1eb-cbff3139db9f" width="300" style="max-width:100%;" alt="logo">
+</p>
 
 ## Philosophy
 Here is why this project created, which problem it solves and where and how can be used.
