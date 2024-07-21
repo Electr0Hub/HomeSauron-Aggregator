@@ -15,6 +15,7 @@ class Camera extends Model
         'name',
         'url',
         'settings',
+        'hostname'
     ];
 
     protected function casts()

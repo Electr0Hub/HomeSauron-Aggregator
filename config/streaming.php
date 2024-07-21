@@ -11,4 +11,7 @@ return [
     'localstorage' => [
         'path' => env('LOCAL_STORAGE_PATH', storage_path('app/cameras')),
     ],
+    'socket' => [
+        'ip' => env('SOCKET_IP'),
+    ]
 ];

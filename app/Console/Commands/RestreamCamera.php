@@ -38,7 +38,6 @@ class RestreamCamera extends Command
      */
     public function handle()
     {
-
         try {
             // Retrieve the camera option
             $cameraOption = $this->option('camera');
@@ -52,9 +51,9 @@ class RestreamCamera extends Command
             // Sometimes for some unknown reason supervisor creates many times the same process for streaming a camera.
             // Here we check, if there is already a process for this camera - just cancel it.
             exec("ps aux | grep 'artisan restream:camera --camera=$cameraOption' | grep -v grep | awk '{print $2}'", $output);
-            if (count($output) !== 0) {
-                exit();
-            }
+//            if (count($output) !== 0) {
+//                exit();
+//            }
 
             // Fetch the camera(s) based on the option
             $camera = Camera::find($cameraOption);
@@ -77,6 +76,7 @@ class RestreamCamera extends Command
 
     protected function restreamCamera(Client $client, Camera $camera): void
     {
+        $this->checkHostNameAndUpdateIfNeeded($camera);
         $url = $camera->url;
 
         $client->getAsync($url, [
@@ -148,6 +148,31 @@ class RestreamCamera extends Command
         )->otherwise(function (\ErrorException $error) {
             $this->error($error);
         });
+    }
+
+    protected function checkHostNameAndUpdateIfNeeded(Camera $camera): void
+    {
+        $parsedUrl = parse_url($camera->url);
+
+        // We don't get from DB since the IP may be changed and we connected to a different camera
+        $currentHostNameOfCamera = gethostbyaddr($parsedUrl['host']);
+
+        // The IP of the camera was changed.
+        // Find the IP of the camera by hostname and update the hostname
+        // So aggregator is sure that the streamed buffers are from correct camera
+        if(!$currentHostNameOfCamera || $currentHostNameOfCamera !== $camera->hostname) {
+            $this->info("IP address of camera $camera->id was changed. Updating IP by camera hostname");
+            $newIp = ipLookupByHostName($camera->hostname);
+
+            if(!$newIp) {
+                $this->error("Couldn't find camera IP for camera $camera->id. Cancelling.");
+                exit();
+            }
+
+            $camera->url = "http://$newIp:81/stream";
+            $camera->save();
+            $this->info("Successfully updated IP address of camera $camera->id");
+        }
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\UrlIsCurrentlyStreaming;
+use App\Rules\CameraIsCurrentlyStreaming;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCameraRequest extends FormRequest
@@ -16,7 +16,7 @@ class StoreCameraRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:cameras'],
-            'url' => ['required', 'string', 'max:255', 'unique:cameras', new UrlIsCurrentlyStreaming()],
+            'url' => ['required', 'string', 'max:255', 'unique:cameras', new CameraIsCurrentlyStreaming()],
             'upload_to_google_drive' => ['nullable'],
             'store_in_localstorage' => ['nullable'],
             'google_store_for_days' => ['required_if:upload_to_google_drive,true', 'int', 'min:1', 'max:30'],

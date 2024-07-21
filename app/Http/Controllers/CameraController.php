@@ -31,8 +31,11 @@ class CameraController extends Controller
 
     public function store(StoreCameraRequest $request): RedirectResponse
     {
+        $parsedUrl = parse_url($request->input('url'));
+        $hostName = gethostbyaddr($parsedUrl['host']);
         $camera = Camera::create([
             'name' => $request->input('name'),
+            'hostname' => $hostName,
             'url' => $request->input('url'),
             'settings' => [
                 'upload_to_google_drive' => $request->filled('upload_to_google_drive') && $request->input('upload_to_google_drive') === 'on',

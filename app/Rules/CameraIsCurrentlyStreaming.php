@@ -10,7 +10,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
-class UrlIsCurrentlyStreaming implements ValidationRule
+class CameraIsCurrentlyStreaming implements ValidationRule
 {
     /**
      * Run the validation rule.
