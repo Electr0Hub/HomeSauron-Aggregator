@@ -51,9 +51,9 @@ class RestreamCamera extends Command
             // Sometimes for some unknown reason supervisor creates many times the same process for streaming a camera.
             // Here we check, if there is already a process for this camera - just cancel it.
             exec("ps aux | grep 'artisan restream:camera --camera=$cameraOption' | grep -v grep | awk '{print $2}'", $output);
-//            if (count($output) !== 0) {
-//                exit();
-//            }
+            if (count($output) !== 0) {
+                exit();
+            }
 
             // Fetch the camera(s) based on the option
             $camera = Camera::find($cameraOption);
@@ -69,7 +69,7 @@ class RestreamCamera extends Command
 
             $this->restreamCamera($client, $camera);
         } catch (\Exception $exception) {
-            Log::channel("streams")->error($exception);
+            $this->error($exception);
             throw $exception;
         }
     }
