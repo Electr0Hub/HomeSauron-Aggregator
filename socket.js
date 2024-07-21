@@ -47,15 +47,15 @@ const subscribeToCameraTopic = async (topic, message) => {
 }
 
 async function scanHosts(socket) {
-    const baseIP = '192.168.2.';
+    const baseIP = process.env.SOCKET_IP.split('.').slice(0, -1).join('.'); // Remove the last segment
     const start = 1;
     const end = 255;
     const port = 81;
 
-    console.log(`Scanning for alive hosts in ${baseIP}1-${end}...`);
+    console.log(`Scanning for alive hosts in ${baseIP}.${start}-${end}...`);
 
     for (let i = start; i <= end; i++) {
-        const host = baseIP + i;
+        const host = `${baseIP}.${i}`;
 
         if (!socket.is_in_network_scan) {
             console.log('Scanning cancelled');
@@ -68,7 +68,7 @@ async function scanHosts(socket) {
                 if (hostnames.length > 0 && hostnames[0].startsWith('home-sauron-')) {
                     console.log(`Found camera at ${host}`);
                     socket.emit('cameras-discovery:result', {
-                        host: host + ':' + port,
+                        host: `${host}:${port}`,
                         hostname: hostnames[0],
                     });
                 }
