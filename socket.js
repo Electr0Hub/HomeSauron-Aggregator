@@ -3,6 +3,7 @@ const http = require('http');
 const redis = require('redis');
 const { Pool } = require('pg');
 const net = require('net');
+const dns = require('dns/promises');  // Use the DNS promises API for hostname resolution
 
 require('dotenv').config()
 
@@ -56,17 +57,27 @@ async function scanHosts(socket) {
     for (let i = start; i <= end; i++) {
         const host = baseIP + i;
 
-        if(!socket.is_in_network_scan) {
+        if (!socket.is_in_network_scan) {
             console.log('Scanning cancelled');
             return;
         }
 
-        if(await checkHost(host, port)) {
-            console.log(`Found camera at ${host}`);
-            socket.emit('cameras-discovery:result', host + ':' + port);
+        if (await checkHost(host, port)) {
+            try {
+                const hostnames = await dns.reverse(host);  // Perform reverse DNS lookup
+                if (hostnames.length > 0 && hostnames[0].startsWith('home-sauron-')) {
+                    console.log(`Found camera at ${host}`);
+                    socket.emit('cameras-discovery:result', {
+                        host: host + ':' + port,
+                        hostname: hostnames[0],
+                    });
+                }
+            } catch (error) {
+                console.log(`Error resolving hostname for ${host}: ${error.message}`);
+            }
         }
 
-        if(i === end) {
+        if (i === end) {
             console.log('Camera scan finished');
             socket.is_in_network_scan = false;
             socket.emit('cameras-discovery:finished');
@@ -115,15 +126,14 @@ const main = async (cameraTopics) => {
 
         console.log(`User connected: ${socket.id}`);
 
-        if(cameraId) {
-            if(cameraId === 'all') {
+        if (cameraId) {
+            if (cameraId === 'all') {
                 cameraTopics.forEach((topic) => {
                     socket.join(topic);
                     console.log(`User ${socket.id} joined room ${topic}`);
                 });
-            }
-            else {
-                socket.join('home_sauron_camera_stream:' + cameraId)
+            } else {
+                socket.join('home_sauron_camera_stream:' + cameraId);
             }
         }
 
@@ -132,7 +142,7 @@ const main = async (cameraTopics) => {
         });
 
         socket.on('cameras-discovery:start', () => {
-            if(socket.is_in_network_scan) {
+            if (socket.is_in_network_scan) {
                 return;
             }
 
@@ -141,7 +151,7 @@ const main = async (cameraTopics) => {
         });
 
         socket.on('cameras-discovery:stop', () => {
-            if(!socket.is_in_network_scan) {
+            if (!socket.is_in_network_scan) {
                 return;
             }
 
@@ -158,7 +168,7 @@ const main = async (cameraTopics) => {
     await redisSubscriber.subscribe('home_sauron_camera_added', async (camera) => {
         camera = JSON.parse(camera);
         const topic = 'home_sauron_camera_stream:' + camera.id;
-        cameraTopics.push(topic)
+        cameraTopics.push(topic);
         await redisSubscriber.subscribe(topic, async (message) => {
             await subscribeToCameraTopic(topic, message)
         });

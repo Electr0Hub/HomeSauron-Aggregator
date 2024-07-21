@@ -20,6 +20,7 @@
                             <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Host</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">HostName</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 <th class="text-secondary opacity-7">Action</th>
                             </tr>
@@ -41,7 +42,12 @@
     <script>
         const tableRow = `<td>
                                 <p class="text-xs font-weight-bold mb-0">
-                                    <a href='http://__HOST__/stream' target='_blank'>__HOST__</a>
+                                    <a href='http://__HOST__/stream' target='_blank'>__HOST__↗️</a>
+                                </p>
+                                </td>
+                                <td>
+                                <p class="text-xs font-weight-bold mb-0">
+                                    __HOSTNAME__
                                 </p>
                                 </td>
                                 <td class="align-middle text-center text-sm">
@@ -65,7 +71,7 @@
         });
 
         socket.on('cameras-discovery:result', (data) => {
-            const htmlToPaste = tableRow.replaceAll('__HOST__', data);
+            const htmlToPaste = tableRow.replaceAll('__HOST__', data.host).replaceAll('__HOSTNAME__', data.hostname);
             const newRow = document.createElement('tr');
             newRow.innerHTML = htmlToPaste;
             newRow.classList.add('camera-discovery-result-row');
